@@ -34,7 +34,7 @@ import safygiphy
 from ext import embedtobox
 
 class Nsfw:
-    """ Nsfw commands """
+    """ NSFW Komutları """
     def __init__(self, bot):
         self.bot = bot
 
@@ -48,12 +48,12 @@ class Nsfw:
 
     @commands.group(invoke_without_command=True)
     async def nsfw(self, ctx):
-        """ Get random lewds from the web """
+        """ Web 'den rastgele lewdler alın """
         pass
 
     @nsfw.command()
     async def xbooru(self, ctx):
-        """ Random image from Xbooru """
+        """ Xbooru'dan rastgele görüntü """
         try:
             try:
                 await ctx.message.delete()
@@ -65,13 +65,13 @@ class Nsfw:
             image = soup.find(id="image").get("src")
             last = str(image.split('?')[-2]).replace('//', '/').replace(':/', '://')
             em = discord.Embed(colour=discord.Colour(0xed791d))
-            em.description = f'[Full Size Link*]({last})'
+            em.description = f'[Tam Link*]({last})'
             em.set_image(url=last)
-            em.set_footer(text='* click link at your own risk!')
+            em.set_footer(text='* kendi sorumluluğunuzdadır linki tıklayın!')
             try:
                 await ctx.send(embed=em)
             except discord.HTTPException:
-                await ctx.send('Unable to send embeds here!')
+                await ctx.send('Burada embedler gönderemezsiniz!')
                 try:
                     async with ctx.session.get(image) as resp:
                         image = await resp.read()
@@ -85,7 +85,7 @@ class Nsfw:
 
     @commands.command(aliases=['gelbooru'])
     async def gel(self, ctx):
-        """ Random image from Gelbooru """
+        """ Gelbooru 'dan rastgele görüntü """
         try:
             try:
                 await ctx.message.delete()
@@ -100,16 +100,16 @@ class Nsfw:
             image = partial.replace('//', '/').replace(':/', '://')
 
             em = discord.Embed(colour=discord.Colour(0xed791d))
-            em.description = f'[Full Size Link*]({image})'
+            em.description = f'[Tam Link*]({image})'
             em.set_image(url=image)
-            em.set_footer(text='* click link at your own risk!')
+            em.set_footer(text='* kendi sorumluluğunuzdadır linki tıklayın!')
             try:
                 await ctx.send(embed=em)
             except discord.HTTPException:
                 # em_list = await embedtobox.etb(em)
                 # for page in em_list:
                 #    await ctx.send(page)
-                await ctx.send('Unable to send embeds here!')
+                await ctx.send('Burada embedler gönderemezsiniz!')
                 try:
                     async with ctx.session.get(image) as resp:
                         image = await resp.read()
@@ -123,9 +123,9 @@ class Nsfw:
 
     @nsfw.command()
     async def gif(self, ctx, *, tag):
-        """ Get a random lewd gif
-        Usage: gif <tag>
-        Available tags: rule34, nsfw, hentai, tits... """
+        """ Rastgele bir müstehcen GIF alın
+        Kullanımı: gif <tag>
+        Mevcut etiketler: rule34, nsfw, hentai, tits... """
         try:
             await ctx.message.delete()
         except discord.Forbidden:
