@@ -6,7 +6,7 @@ import aiohttp
 import traceback
 
 class Git:
-    '''Github Cog, facilitates viewing and creating issues'''
+    '''GitHub cog, görüntüleme ve sorunları oluşturmayı kolaylaştırır'''
     def __init__(self, bot):
         self.bot = bot
         self.session = aiohttp.ClientSession()
@@ -14,25 +14,24 @@ class Git:
     @property
     def githubtoken(self):
         '''
-        Returns your token wherever it is
-
-        This token can give any user complete access to the account.
-        https://github.com/settings/tokens is where you make a token.
+        Belirteci her yerde döndürür
+        Bu belirteç, Kullanıcı hesabına tam erişim sağlayabilir.
+        `https://github.com/settings/tokens` bir belirteç yaptığın yerdir.
         '''
         with open('data/config.json') as f:
             config = json.load(f)
             return os.environ.get('GITHUBTOKEN') or config.get('GITHUBTOKEN')
 
     async def githubusername(self):
-        '''Returns Github Username'''
-        async with self.session.get('https://api.github.com/user', headers={"Authorization": f"Bearer {self.githubtoken}"}) as resp: #get username 
+        '''GitHub Kullanıcı adını döndürür'''
+        async with self.session.get('https://api.github.com/user', headers={"Yetkilendirme": f"Bearer {self.githubtoken}"}) as resp: #get username 
             if 300 > resp.status >= 200:
                 return (await resp.json())['login']
             if resp.status == 401: #invalid token!
                 return None
 
     async def starred(self, repo):
-        async with self.session.get('https://api.github.com/user/starred/' + repo, headers={"Authorization": f"Bearer {self.githubtoken}"}) as resp:
+        async with self.session.get('https://api.github.com/user/starred/' + repo, headers={"Yetkilendirme": f"Bearer {self.githubtoken}"}) as resp:
             if resp.status == 204:
                 return True
             if resp.status == 404:
@@ -40,23 +39,23 @@ class Git:
         
     async def __local_check(self, ctx):
         if self.githubtoken is None:
-            await ctx.send('Github token not provided.', delete_after=10)
+            await ctx.send('GitHub belirteci sağlanmadı.', delete_after=10)
             return False
         return True
 
     @commands.command()
     async def issue(self, ctx, repo, issueid):
-        '''View an issue from Github!'''
+        '''GitHub dan bir sorun görüntüleyin!'''
         async with ctx.session.get(f"https://api.github.com/repos/{repo}/issues/{issueid}") as resp:
             if resp.status == 200 or resp.status == 201:
                 issueinfo = await resp.json()
             else:
-                return await ctx.send('ConnectionError: Github API Issue.')
+                return await ctx.send('BağlantıHatası: GitHub API sorunu.')
         async with ctx.session.get(issueinfo['comments_url']) as resp:
             if resp.status == 200 or resp.status == 201:
                 commentsinfo = await resp.json()
             else:
-                return await ctx.send('ConnectionError: Github API Issue.')
+                return await ctx.send('BağlantıHatası: GitHub API sorunu.')
 
         if issueinfo['state'] == 'closed': colour = 0xcb2431
         elif issueinfo['state'] == 'open': colour = 0x2cbe4e
@@ -64,9 +63,9 @@ class Git:
         try:
             issueinfo['pull_request']
         except KeyError:
-            issuetype = 'Issue'
+            issuetype = 'Konu'
         else:
-            issuetype = 'Pull Request'
+            issuetype = 'Çekme Isteği'
         em = discord.Embed(title=issueinfo['title'] + ' (#' + str(issueinfo['number']) + ')', description=issueinfo['body'], url=issueinfo['html_url'], color=colour)
         em.set_author(name=issueinfo['user']['login'] + ' (' + issueinfo['author_association'].capitalize() + ')', icon_url=issueinfo['user']['avatar_url'])
         em.set_footer(text=issuetype + ' | ' + issueinfo['created_at'])
@@ -76,12 +75,12 @@ class Git:
     
     @commands.command()
     async def makeissue(self, ctx, repo, title, *, body):
-        '''Create an issue! `{p}makeissue <title> | <body>`'''
+        '''Bir sorun yarat! `{p}makeissue <title> | <body>`'''
         async with ctx.session.post(f'https://api.github.com/repos/{repo}/issues', json={"title": title, "body": body}, headers={'Authorization': f'Bearer {self.githubtoken}'}) as resp:
             if resp.status == 200 or resp.status == 201:
                 issueinfo = await resp.json()
             else:
-                return await ctx.send('ConnectionError: Github API Issue.')
+                return await ctx.send('BağlantıHatası: GitHub API sorunu.')
 
         em = discord.Embed(title=issueinfo['title'] + ' (#' + str(issueinfo['number']) + ')', description=issueinfo['body'], url=issueinfo['html_url'], color=0xcb2431)
         em.set_author(name=issueinfo['user']['login'] + ' (' + issueinfo['author_association'].capitalize() + ')', icon_url=issueinfo['user']['avatar_url'])
@@ -90,15 +89,15 @@ class Git:
 
     @commands.command()
     async def comment(self, ctx, repo, issueid:int, *, content):
-        '''Comment on a Github Issue'''
+        '''Bir GitHub sorunu hakkında yorum yap.'''
         async with ctx.session.post(f'https://api.github.com/repos/{repo}/issues/{issueid}/comments', json={"body": content}, headers={'Authorization': f'Bearer {self.githubtoken}'}) as resp:
             if resp.status != 200 and resp.status != 201:
-                return await ctx.send('ConnectionError: Github API Issue.')
-        await ctx.send('Submitted comment to issue ' + str(issueid))
+                return await ctx.send('BağlantıHatası: GitHub API sorunu.')
+        await ctx.send('Konuya yorum gönderildi ' + str(issueid))
 
     @commands.command()
     async def suggest(self, ctx, summary, *, details):
-        '''Create an issue! `{p}makeissue <short summary> | <details>`'''
+        '''Bir sorun yarat! `{p}makeissue <short summary> | <details>`'''
         async with ctx.session.post('https://api.github.com/repos/kyb3r/selfbot.py/issues', json={"title": summary, "body": details}, headers={'Authorization': f'Bearer {self.githubtoken}'}) as resp:
             if resp.status == 200 or resp.status == 201:
                 issueinfo = await resp.json()
