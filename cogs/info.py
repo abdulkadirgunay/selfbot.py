@@ -42,14 +42,14 @@ class Information:
 
     @commands.command(no_pm=True)
     async def channels(self, ctx, serverid:int = None):
-        """Shows ALL channels, use wisely!"""
+        """Tüm kanalları gösterir, akıllıca kullanın!"""
 
         if serverid is None:
             server = ctx.guild
         else:
             server = discord.utils.get(self.bot.guilds, id=serverid)
             if server is None:
-                return await ctx.send('Server not found!')
+                return await ctx.send('Sunucu bulunamadı!')
 
         e = discord.Embed()
         e.color = await ctx.get_dominant_color()
@@ -66,11 +66,11 @@ class Information:
             text += f'\U0001f4dd {channel}\n'
         
         if len(server.text_channels) > 0:
-            e.add_field(name='Text Channels', value=f'```{text}```')
+            e.add_field(name='Metin Kanalları', value=f'```{text}```')
         if len(server.categories) > 0:
-            e.add_field(name='Categories', value=f'```{categories}```')
+            e.add_field(name='Kategoriler', value=f'```{categories}```')
         if len(server.voice_channels) > 0:
-            e.add_field(name='Voice Channels', value=f'```{voice}```')
+            e.add_field(name='Ses Kanalları', value=f'```{voice}```')
 
         try:
             await ctx.send(embed=e)
@@ -82,7 +82,7 @@ class Information:
     @commands.command(aliases=["ri","role"], no_pm=True)
     @commands.guild_only()
     async def roleinfo(self, ctx, *, role: discord.Role):
-        '''Shows information about a role'''
+        '''Rol hakkındaki bilgileri gösterir.'''
         guild = ctx.guild
 
         since_created = (ctx.message.created_at - role.created_at).days
@@ -106,21 +106,21 @@ class Information:
 
         em = discord.Embed(colour=color)
         em.set_author(name=role.name)
-        em.add_field(name="Users", value=len(role.members))
-        em.add_field(name="Mentionable", value=role.mentionable)
-        em.add_field(name="Hoist", value=role.hoist)
-        em.add_field(name="Position", value=role.position)
-        em.add_field(name="Managed", value=role.managed)
-        em.add_field(name="Colour", value=colour)
-        em.add_field(name='Creation Date', value=created_on)
-        em.add_field(name='Members', value=members[:-2], inline=False)
-        em.set_footer(text=f'Role ID: {role.id}')
+        em.add_field(name="Kullanıcılar", value=len(role.members))
+        em.add_field(name="Etiketlenmiş", value=role.mentionable)
+        em.add_field(name="Vinç", value=role.hoist)
+        em.add_field(name="Pozisyon", value=role.position)
+        em.add_field(name="Yönetilen", value=role.managed)
+        em.add_field(name="Renk", value=colour)
+        em.add_field(name='Oluşturulma Tarihi', value=created_on)
+        em.add_field(name='Üyeler', value=members[:-2], inline=False)
+        em.set_footer(text=f'Rol ID: {role.id}')
 
         await ctx.send(embed=em)
 
     @commands.command(aliases=['av'])
     async def avatar(self, ctx, *, member : discord.Member=None):
-        '''Returns someone's avatar url'''
+        '''Birinin avatar URL sini döndürür'''
         member = member or ctx.author
         av = member.avatar_url
         if ".gif" in av:
@@ -145,7 +145,7 @@ class Information:
 
     @commands.command(aliases=['servericon'], no_pm=True)
     async def serverlogo(self, ctx):
-        '''Return the server's icon url.'''
+        '''Sunucunun simge URL sini döndürür.'''
         icon = ctx.guild.icon_url
         color = await ctx.get_dominant_color(icon)
         server = ctx.guild
@@ -169,7 +169,7 @@ class Information:
     @commands.command(aliases=['server','si','svi'], no_pm=True)
     @commands.guild_only()
     async def serverinfo(self, ctx, server_id : int=None):
-        '''See information about the server.'''
+        '''Sunucu hakkındaki bilgileri görün.'''
         server = self.bot.get_server(id=server_id) or ctx.guild
         total_users = len(server.members)
         online = len([m for m in server.members if m.status != discord.Status.offline])
@@ -182,14 +182,14 @@ class Information:
         colour = await ctx.get_dominant_color(server.icon_url)
 
         data = discord.Embed(description=created_at,colour=colour)
-        data.add_field(name="Region", value=str(server.region))
-        data.add_field(name="Users", value="{}/{}".format(online, total_users))
-        data.add_field(name="Text Channels", value=text_channels)
-        data.add_field(name="Voice Channels", value=voice_channels)
-        data.add_field(name="Categories", value=categories)
-        data.add_field(name="Roles", value=len(server.roles))
-        data.add_field(name="Owner", value=str(server.owner))
-        data.set_footer(text="Server ID: " + str(server.id))
+        data.add_field(name="Bölge", value=str(server.region))
+        data.add_field(name="Kullanıcılar", value="{}/{}".format(online, total_users))
+        data.add_field(name="Metin Kanalları", value=text_channels)
+        data.add_field(name="Ses Kanalları", value=voice_channels)
+        data.add_field(name="Kategoriler", value=categories)
+        data.add_field(name="Roller", value=len(server.roles))
+        data.add_field(name="Sahip", value=str(server.owner))
+        data.set_footer(text="Sunucu ID: " + str(server.id))
         data.set_author(name=server.name, icon_url=None or server.icon_url)
         data.set_thumbnail(url=None or server.icon_url)
         try:
@@ -201,7 +201,7 @@ class Information:
 
     @commands.command()
     async def tags(self, ctx, *, text: str=None):
-        ''' Get useful selfbot tags & tutorials '''
+        ''' Yararlı selfbot Etiketleri ve öğreticiler alın '''
         try:
             await ctx.message.delete()
         except discord.Forbidden:
@@ -220,7 +220,7 @@ class Information:
                     f'`9.`{p}android-token\n`10.`{p}android-heroku'
             e = discord.Embed()
             e.color = await ctx.get_dominant_color(url=ctx.message.author.avatar_url)
-            e.add_field(name='Tag not found!', value=usage)
+            e.add_field(name='Etiket bulunamadı!', value=usage)
             try:
                 await ctx.send(embed=e, delete_after=15)
             except Exception as e:
@@ -229,7 +229,7 @@ class Information:
     @commands.command(aliases=['ui'], no_pm=True)
     @commands.guild_only()
     async def userinfo(self, ctx, *, member : discord.Member=None):
-        '''Get information about a member of a server'''
+        '''Sunucu üyesi hakkında bilgi edin!'''
         server = ctx.guild
         user = member or ctx.message.author
         avi = user.avatar_url
@@ -248,11 +248,11 @@ class Information:
 
         em = discord.Embed(colour=color, description=desc, timestamp=time)
         em.add_field(name='Nick', value=user.nick, inline=True)
-        em.add_field(name='Member No.',value=str(member_number),inline = True)
-        em.add_field(name='Account Created', value=user.created_at.__format__('%A, %d. %B %Y'))
-        em.add_field(name='Join Date', value=user.joined_at.__format__('%A, %d. %B %Y'))
-        em.add_field(name='Roles', value=rolenames, inline=True)
-        em.set_footer(text='User ID: '+str(user.id))
+        em.add_field(name='Üye No.',value=str(member_number),inline = True)
+        em.add_field(name='Hesap Oluşturuldu', value=user.created_at.__format__('%A, %d. %B %Y'))
+        em.add_field(name='Giriş Tarihi', value=user.joined_at.__format__('%A, %d. %B %Y'))
+        em.add_field(name='Rolleri', value=rolenames, inline=True)
+        em.set_footer(text='Kullanıcı ID: '+str(user.id))
         em.set_thumbnail(url=avi)
         em.set_author(name=user, icon_url=server.icon_url)
 
@@ -265,13 +265,13 @@ class Information:
 
     @commands.command(aliases=['bot', 'info'])
     async def about(self, ctx):
-        '''See information about the selfbot and latest changes.'''
+        '''Bot ve son değişiklikler hakkındaki bilgileri görün.'''
 
         embed = discord.Embed()
-        embed.url = 'https://selfbot-py.tk'
+        embed.url = 'https://discord.gg/PxUbnYv'
         embed.colour = await ctx.get_dominant_color(ctx.author.avatar_url)
 
-        embed.set_author(name='selfbot.py', icon_url=ctx.author.avatar_url)
+        embed.set_author(name='dtpk.py', icon_url=ctx.author.avatar_url)
 
         total_members = sum(1 for _ in self.bot.get_all_members())
         total_online = len({m.id for m in self.bot.get_all_members() if m.status is discord.Status.online})
@@ -298,23 +298,21 @@ class Information:
             fmt = '{d}d ' + fmt
         uptime = fmt.format(d=days, h=hours, m=minutes, s=seconds)
 
-        github = '[Click Here](https://github.com/kyb3r/selfbot.py/)'
-        server = '[Click Here](https://discord.gg/2B4UvKx)'
-        website = '[selfbot-py.tk](http://selfbot-py.tk/)'
+
+        server = '[TIKLA](https://discord.gg/PxUbnYv)'
 
 
-        embed.add_field(name='Author', value='kyb3r#7220')
-        embed.add_field(name='Uptime', value=uptime)
-        embed.add_field(name='Guilds', value=len(self.bot.guilds))
-        embed.add_field(name='Members', value=f'{total_unique} total\n{total_online} online')
-        embed.add_field(name='Channels', value=f'{text} text\n{voice} voice\n{dm} direct')
+        embed.add_field(name='Yazar', value='kyb3r#7220')
+	embed.add_field(name='Sahip', value='Abdülkadir GÜNAY#6582')
+        embed.add_field(name='Çalışma Süresi', value=uptime)
+        embed.add_field(name='Sunucular', value=len(self.bot.guilds))
+        embed.add_field(name='Kullanıcılar', value=f'{total_unique} total\n{total_online} online')
+        embed.add_field(name='Kanallar', value=f'{text} text\n{voice} voice\n{dm} direct')
         memory_usage = self.bot.process.memory_full_info().uss / 1024**2
         cpu_usage = self.bot.process.cpu_percent() / psutil.cpu_count()
-        embed.add_field(name='Process', value=f'{memory_usage:.2f} MiB\n{cpu_usage:.2f}% CPU')
-        embed.add_field(name='Github', value=github)
+        embed.add_field(name='Süreç', value=f'{memory_usage:.2f} MiB\n{cpu_usage:.2f}% CPU')
         embed.add_field(name='Discord', value=server)
-        embed.add_field(name='Website', value=website)
-        embed.set_footer(text=f'Powered by discord.py {discord.__version__}')
+        embed.set_footer(text=f'discord.py tarafından desteklenmektedir. {discord.__version__}')
         await ctx.send(embed=embed)
 
 
